@@ -37,8 +37,8 @@ def get_open_meteo_data():
             "latitude": [x.latitude for x in parcels],
             "longitude": [x.longitude for x in parcels],
             "hourly": ["temperature_2m", "relative_humidity_2m", "precipitation", "rain", "surface_pressure",
-                       "wind_speed_10m", "soil_temperature_0cm", "soil_temperature_6cm", "soil_temperature_18cm",
-                       "soil_temperature_54cm"],
+                       "wind_speed_10m", "soil_temperature_0_to_7cm", "soil_temperature_7_to_28cm",
+                       "soil_temperature_28_to_100cm", "soil_temperature_100_to_255cm"],
             "past_days": 1
         }
         responses = openmeteo.weather_api(url, params=params)
@@ -52,10 +52,10 @@ def get_open_meteo_data():
             hourly_rain = hourly.Variables(3).ValuesAsNumpy()
             hourly_surface_pressure = hourly.Variables(4).ValuesAsNumpy()
             hourly_wind_speed_10m = hourly.Variables(5).ValuesAsNumpy()
-            hourly_soil_temperature_0cm = hourly.Variables(6).ValuesAsNumpy()
-            hourly_soil_temperature_6cm = hourly.Variables(7).ValuesAsNumpy()
-            hourly_soil_temperature_18cm = hourly.Variables(8).ValuesAsNumpy()
-            hourly_soil_temperature_54cm = hourly.Variables(9).ValuesAsNumpy()
+            hourly_soil_temperature_0_to_7cm = hourly.Variables(6).ValuesAsNumpy()
+            hourly_soil_temperature_7_to_28cm = hourly.Variables(7).ValuesAsNumpy()
+            hourly_soil_temperature_28_to_100cm = hourly.Variables(8).ValuesAsNumpy()
+            hourly_soil_temperature_100_to_255cm = hourly.Variables(9).ValuesAsNumpy()
 
             hourly_data = {
                 "date": pd.date_range(
@@ -72,10 +72,10 @@ def get_open_meteo_data():
             hourly_data["rain"] = hourly_rain
             hourly_data["surface_pressure"] = hourly_surface_pressure
             hourly_data["wind_speed_10m"] = hourly_wind_speed_10m
-            hourly_data["soil_temperature_0cm"] = hourly_soil_temperature_0cm
-            hourly_data["soil_temperature_6cm"] = hourly_soil_temperature_6cm
-            hourly_data["soil_temperature_18cm"] = hourly_soil_temperature_18cm
-            hourly_data["soil_temperature_54cm"] = hourly_soil_temperature_54cm
+            hourly_data["soil_temperature_0_to_7cm"] = hourly_soil_temperature_0_to_7cm
+            hourly_data["soil_temperature_7_to_28cm"] = hourly_soil_temperature_7_to_28cm
+            hourly_data["soil_temperature_28_to_100cm"] = hourly_soil_temperature_28_to_100cm
+            hourly_data["soil_temperature_100_to_255cm"] = hourly_soil_temperature_100_to_255cm
 
             hourly_dataframe = pd.DataFrame(data=hourly_data)
 

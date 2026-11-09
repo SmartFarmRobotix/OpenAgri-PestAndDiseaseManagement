@@ -1,0 +1,57 @@
+{
+  "name": "Cabbage aphid",
+  "eppo_code": "BRVCBR",
+  "crops": ["brassica-oleracea", "brassica-oleracea-sabellica"],
+  "description": "Brevicoryne brassicae (L.), the cabbage aphid, on Brassica crops. Weather-rule risk bands derived from the agronomic literature (see _encoding_notes).",
+  "version": "1.0.0",
+  "source": "literature (see _encoding_notes)",
+  "source_version": "2",
+  "review_status": "literature-sourced",
+  "geo_areas_of_application": null,
+  "rules": [
+    {
+      "name": "High pressure — optimal warm, dry conditions",
+      "description": "Temperature within the 20-25 C population-growth optimum (r_m peaks at 25 C; Soh et al. 2018) with zero recorded precipitation in the hour (see the literature cited below). The literature supports only a qualitative dampening direction for precipitation, not a sourced numeric rate cutoff — so this rule gates on 'no precipitation recorded' (0 mm) rather than an invented magnitude threshold: any recorded precipitation in the hour, however small, downgrades to moderate via the next rule instead.",
+      "probability_value": "high",
+      "conditions": [
+        {"unit": "atmospheric_temperature", "operator": ">=", "value": 20},
+        {"unit": "atmospheric_temperature", "operator": "<=", "value": 25},
+        {"unit": "precipitation", "operator": "<=", "value": 0}
+      ]
+    },
+    {
+      "name": "Moderate pressure — optimal temperature band, wet hour",
+      "description": "Same 20-25 C optimum as the high-pressure rule, but with any recorded precipitation in the hour (> 0 mm). The literature: precipitation is a documented (if regionally contested) dampening factor, so this hour is downgraded rather than counted as high risk; the gate is zero-vs-nonzero, not a rate threshold, because no source in the literature review gives a dose-response magnitude for BRVCBR.",
+      "probability_value": "moderate",
+      "conditions": [
+        {"unit": "atmospheric_temperature", "operator": ">=", "value": 20},
+        {"unit": "atmospheric_temperature", "operator": "<=", "value": 25},
+        {"unit": "precipitation", "operator": ">", "value": 0}
+      ]
+    },
+    {
+      "name": "Moderate pressure — upper transitional band",
+      "description": "25-30 C: nymph-to-adult development time is still short (Soh et al. 2018: ~5.05-5.08 days) but the intrinsic rate of increase is falling toward the population-decline threshold observed at 30 C. Treated as a caution band, not full high pressure.",
+      "probability_value": "moderate",
+      "conditions": [
+        {"unit": "atmospheric_temperature", "operator": ">", "value": 25},
+        {"unit": "atmospheric_temperature", "operator": "<=", "value": 30}
+      ]
+    },
+    {
+      "name": "Moderate pressure — lower transitional band",
+      "description": "15-20 C: development continues (Soh et al. 2018: ~6.4-10.4 days nymph-to-adult) but below the 20-25 C population-growth optimum.",
+      "probability_value": "moderate",
+      "conditions": [
+        {"unit": "atmospheric_temperature", "operator": ">=", "value": 15},
+        {"unit": "atmospheric_temperature", "operator": "<", "value": 20}
+      ]
+    }
+  ],
+  "_encoding_notes": [
+    "No rule fires below 15 C or above 30 C; calculate_risk_index_probability_wd's per-hour default of 'low' applies there, consistent with the literature's ~4 C lower developmental threshold and its cautious ~30 C+ upper caution bound.",
+    "Humidity (atmospheric_relative_humidity) is deliberately NOT used as a hard gate on any rule: the literature found directly conflicting field evidence on the sign of the humidity effect across studies/regions. Encoding an unproven directional humidity gate would overstate the science; this is left for agronomic review rather than guessed.",
+    "The precipitation gate (0 mm, i.e. zero-vs-nonzero recorded precipitation in the hour) is deliberately NOT a numeric rate threshold: the literature review gives a sourced qualitative dampening direction but no sourced dose-response magnitude for BRVCBR.",
+    "The economic-threshold percentage (10% plants infested per UNH Extension) is a scouting/ground-truth concept, not a weather-rule condition, and is intentionally not encoded here."
+  ]
+}

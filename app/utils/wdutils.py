@@ -46,12 +46,13 @@ def fetch_weather_data(
                 "end": end_date.isoformat(),
                 "variables": variables,
                 "radius_km": radius_km
-            }
+            },
+            timeout=settings.WEATHER_PROXY_TIMEOUT_SECONDS
         )
-    except RequestException:
+    except RequestException as exc:
         raise HTTPException(
-            status_code=400,
-            detail="Error during proxy call via gk"
+            status_code=503,
+            detail="Weather data proxy unreachable via GK: {}".format(exc)
         )
 
     if response.status_code == 400:
@@ -62,8 +63,16 @@ def fetch_weather_data(
 
     if response.status_code == 404:
         raise HTTPException(
-            status_code=400,
+            status_code=404,
             detail="Error, GK returning 404, Weather Data API missing."
+        )
+
+    if not response.ok:
+        raise HTTPException(
+            status_code=502,
+            detail="Unexpected upstream status from GK weather-data proxy: {} {}".format(
+                response.status_code, response.reason
+            )
         )
 
     return response.json()

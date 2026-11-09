@@ -1,0 +1,15 @@
+{
+  "name": "Melon aphid", "eppo_code": "APHIGO", "crops": ["cucumis-sativus"],
+  "description": "Aphis gossypii Glover, the melon aphid, on cucumber.",
+  "version": "1.0.0", "source": "literature (see _encoding_notes)", "source_version": "1", "review_status": "literature-sourced", "geo_areas_of_application": null,
+  "rules": [
+    {"name": "High pressure — warm, dry hour", "description": "22-30 C with at most 1 mm precipitation in the hour.", "probability_value": "high", "conditions": [{"unit": "atmospheric_temperature", "operator": ">=", "value": 22}, {"unit": "atmospheric_temperature", "operator": "<=", "value": 30}, {"unit": "precipitation", "operator": "<=", "value": 1}]},
+    {"name": "Moderate pressure — warm, wet hour", "description": "22-30 C with more than 1 mm precipitation in the hour.", "probability_value": "moderate", "conditions": [{"unit": "atmospheric_temperature", "operator": ">=", "value": 22}, {"unit": "atmospheric_temperature", "operator": "<=", "value": 30}, {"unit": "precipitation", "operator": ">", "value": 1}]},
+    {"name": "Moderate pressure — lower temperature band", "description": "15 C through below 22 C.", "probability_value": "moderate", "conditions": [{"unit": "atmospheric_temperature", "operator": ">=", "value": 15}, {"unit": "atmospheric_temperature", "operator": "<", "value": 22}]},
+    {"name": "Moderate pressure — upper temperature band", "description": "Above 30 C through 32.5 C.", "probability_value": "moderate", "conditions": [{"unit": "atmospheric_temperature", "operator": ">", "value": 30}, {"unit": "atmospheric_temperature", "operator": "<=", "value": 32.5}]}
+  ],
+  "_encoding_notes": [
+    "Kocourek et al. 1994 and Satar et al. 2005 provide the cucumber Aphis gossypii temperature evidence; Davis et al. 2006 is the Myzus persicae comparison.",
+    "No humidity condition is encoded: the cited sources give no consistent humidity effect for these aphids on cucumber."
+  ]
+}

@@ -1,6 +1,6 @@
 from typing import List
 
-from sqlalchemy import Column, String
+from sqlalchemy import JSON, Column, String
 from sqlalchemy.dialects.postgresql import UUID
 from uuid import uuid4
 from sqlalchemy.orm import Mapped, relationship
@@ -15,6 +15,8 @@ class PestModel(Base):
     name = Column(String, nullable=False)
     description = Column(String, nullable=True)
     geo_areas_of_application = Column(String, nullable=True)
+    crops = Column(JSON, nullable=True)
+    eppo_code = Column(String, nullable=True)
 
     cultivations : Mapped[List["Cultivation"]] = relationship(back_populates="pest_model")
 

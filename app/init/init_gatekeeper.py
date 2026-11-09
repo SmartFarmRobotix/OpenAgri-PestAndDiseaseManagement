@@ -1,3 +1,5 @@
+import logging
+
 import requests
 
 from fastapi import APIRouter
@@ -5,7 +7,9 @@ from core import settings
 from requests.exceptions import RequestException
 
 
-from api.api_v1.endpoints import operator, pest_model, rule, tool, unit, model, disease
+from api.api_v1.endpoints import operator, pest_model, rule, tool, unit, model, disease, risk_assessment
+
+logger = logging.getLogger(__name__)
 
 
 def register_apis_to_gatekeeper():
@@ -18,15 +22,23 @@ def register_apis_to_gatekeeper():
             json={
                 "username": "{}".format(settings.GATEKEEPER_USERNAME),
                 "password": "{}".format(settings.GATEKEEPER_PASSWORD)
-            }
+            },
+            timeout=settings.GK_REGISTRATION_TIMEOUT_SECONDS
         )
     except RequestException:
         return
 
-    temp = at.json()
-
-    access = temp["access"]
-    refresh = temp["refresh"]
+    try:
+        temp = at.json()
+        access = temp["access"]
+        refresh = temp["refresh"]
+    except (ValueError, KeyError) as exc:
+        logger.warning(
+            "GK registration: could not parse login response (%s); "
+            "continuing startup without registering APIs to Gatekeeper.",
+            exc,
+        )
+        return
 
     # Register APIs
     apis_to_register = APIRouter()
@@ -37,6 +49,7 @@ def register_apis_to_gatekeeper():
     apis_to_register.include_router(unit.router, prefix="/unit")
     apis_to_register.include_router(model.router, prefix="/model")
     apis_to_register.include_router(disease.router, prefix="/disease")
+    apis_to_register.include_router(risk_assessment.router, prefix="")
 
     for api in apis_to_register.routes:
         try:
@@ -48,14 +61,16 @@ def register_apis_to_gatekeeper():
                     "service_name": settings.SERVICE_NAME,
                     "endpoint": "api/v1/" + api.path.lstrip("/"),
                     "methods": list(api.methods)
-                }
+                },
+                timeout=settings.GK_REGISTRATION_TIMEOUT_SECONDS
             )
         except RequestException:
             try:
                 requests.post(
                     url=str(settings.GATEKEEPER_BASE_URL).strip("/") + "/api/logout/",
                     headers={"Content-Type": "application/json"},
-                    json={"refresh": refresh}
+                    json={"refresh": refresh},
+                    timeout=settings.GK_REGISTRATION_TIMEOUT_SECONDS
                 )
             except RequestException:
                 return
@@ -66,7 +81,8 @@ def register_apis_to_gatekeeper():
         requests.post(
             url=str(settings.GATEKEEPER_BASE_URL).strip("/") + "/api/logout/",
             headers={"Content-Type": "application/json"},
-            json={"refresh": refresh}
+            json={"refresh": refresh},
+            timeout=settings.GK_REGISTRATION_TIMEOUT_SECONDS
         )
     except RequestException:
         return

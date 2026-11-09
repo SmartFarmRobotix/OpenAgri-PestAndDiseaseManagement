@@ -7,11 +7,14 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       PGPORT: ${POSTGRES_PORT}
+    volumes:
+      - pdmdb_data:/var/lib/postgresql/data
     healthcheck:
       test: pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
-      start_period: 10s
-      retries: 3
-      interval: 360s
+      start_period: 5s
+      retries: 5
+      interval: 5s
+      timeout: 5s
   pdm:
     depends_on:
       db:
@@ -21,5 +24,26 @@ services:
       - ${SERVICE_PORT}:${SERVICE_PORT}
     build: .
     command: /code/entrypoint.sh ${SERVICE_PORT}
+    healthcheck:
+      test: wget --no-verbose --tries=1 -O /dev/null http://localhost:${SERVICE_PORT}/ready || exit 1
+      start_period: 10s
+      retries: 5
+      interval: 10s
+      timeout: 5s
     env_file:
       - .env
+    environment:
+      PDM_WEATHER_ENABLED: "true"
+    networks:
+      default:
+      oa_gk_network:
+        aliases:
+          - pdm
+
+volumes:
+  pdmdb_data:
+
+networks:
+  oa_gk_network:
+    name: openagri-gatekeeper_oa_network
+    external: true

@@ -1,0 +1,11 @@
+services:
+  pdm:
+    environment:
+      USING_GATEKEEPER: "true"
+      GATEKEEPER_BASE_URL: "http://web:8001/"
+      GATEKEEPER_USERNAME: "admin"
+      GATEKEEPER_PASSWORD: "admin"
+      SERVICE_NAME: "pdm"
+      SERVICE_PORT: "8003"
+      JWT_ALGORITHM: "HS256"
+      LOGGING: "INFO"

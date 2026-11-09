@@ -40,7 +40,7 @@ def calculate_gdd(db: Session, parcel: Parcel, disease_models: List[Disease],
                   "soil_temperature_20cm",
                   "soil_temperature_30cm", "soil_temperature_40cm", "soil_temperature_50cm", "soil_temperature_60cm",
                   "solar_irradiance_copernicus",
-                  "parcel_id"], axis=1)
+                  "parcel_id"], axis=1, errors="ignore")
 
     try:
         df = df.resample("1D", on="datetime").mean()
